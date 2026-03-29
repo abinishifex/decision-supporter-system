@@ -4,6 +4,15 @@ import FeatureCard from '../components/FeatureCard';
 import { Zap, Shield, BarChart3, Users, Globe, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const Home = () => {
+  const features = [
+    { icon: Zap, title: "Dynamic Logic", description: "Our system adapts questions based on your specific problem context." },
+    { icon: Shield, title: "Objective Analysis", description: "Remove emotional bias from your decision-making process." },
+    { icon: BarChart3, title: "Visual Scoring", description: "See clear rankings and scores for all your options." },
+    { icon: Users, title: "Team Ready", description: "Perfect for individual choices or collaborative team decisions." },
+    { icon: Globe, title: "Access Anywhere", description: "Cloud-based tool available on all your devices." },
+    { icon: Clock, title: "Save Time", description: "Reach conclusions faster with structured evaluation." }
+  ];
 
   return (
     <div>
