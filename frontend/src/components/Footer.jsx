@@ -35,9 +35,9 @@ const Footer = () => {
           <div>
             <h4 className="footer-title">Social</h4>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <a href="#" className="footer-link"><Twitter size={20} /></a>
-              <a href="#" className="footer-link"><Github size={20} /></a>
-              <a href="#" className="footer-link"><Linkedin size={20} /></a>
+              <a href="#" className="footer-link"><Twitter size={30} /></a>
+              <a href="#" className="footer-link"><Github size={30} /></a>
+              <a href="#" className="footer-link"><Linkedin size={30} /></a>
             </div>
           </div>
         </div>
