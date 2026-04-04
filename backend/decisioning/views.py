@@ -3,8 +3,18 @@ import json
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import DecisionSession
-from .services import build_chat_response, evaluate_decision, validate_decision_payload
+from .models import DecisionSession, Category
+from .services import evaluate_decision
+from rest_framework import viewsets, mixins
+from .serializers import CategorySerializer, EvaluateDecisionSerializer
+
+class CategoryViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    Exposes GET /api/categories/ and GET /api/categories/<id>/
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
 
 
 def health_view(request):
@@ -20,28 +30,33 @@ def evaluate_view(request):
 
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
-        normalized = validate_decision_payload(payload)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Request body must be valid JSON."}, status=400)
+
+    serializer = EvaluateDecisionSerializer(data=payload)
+    if not serializer.is_valid():
+        return JsonResponse({"error": serializer.errors}, status=400)
+
+    validated = serializer.validated_data
+    
+    try:
         evaluation = evaluate_decision(
-            normalized["problem"],
-            normalized["category"],
-            normalized["options"],
-            normalized["answers"],
+            validated["problem"],
+            validated["category_id"], # DRF converts this to the actual Category ORM object
+            validated["options"],
+            validated["answers"],
         )
         session = DecisionSession.objects.create(
-            problem=normalized["problem"],
-            category_id=normalized["category"]["id"],
-            category_name=normalized["category"]["name"],
-            category_payload=normalized["category"],
-            options=normalized["options"],
-            answers=normalized["answers"],
+            problem=validated["problem"],
+            category=validated["category_id"],
+            options=validated["options"],
+            answers=validated["answers"],
             results=evaluation["results"],
             recommendation=evaluation["recommendedOption"],
             analysis=evaluation["analysis"],
         )
-    except ValueError as exc:
-        return JsonResponse({"error": str(exc)}, status=400)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Request body must be valid JSON."}, status=400)
+    except Exception as exc:
+        return JsonResponse({"error": str(exc)}, status=500)
 
     evaluation["decisionId"] = session.id
     return JsonResponse(evaluation, status=201)
@@ -60,7 +75,7 @@ def decision_detail_view(request, decision_id):
         {
             "decisionId": session.id,
             "problem": session.problem,
-            "category": session.category_payload,
+            "category": session.category.id if session.category else None,
             "options": session.options,
             "answers": session.answers,
             "results": session.results,
@@ -70,19 +85,3 @@ def decision_detail_view(request, decision_id):
         }
     )
 
-
-@csrf_exempt
-def chat_view(request):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
-
-    try:
-        payload = json.loads(request.body.decode("utf-8") or "{}")
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Request body must be valid JSON."}, status=400)
-
-    message = str(payload.get("message", "")).strip()
-    if not message:
-        return JsonResponse({"error": "Message is required."}, status=400)
-
-    return JsonResponse({"reply": build_chat_response(message)})
