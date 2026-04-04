@@ -1,11 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import decision_detail_view, evaluate_view, health_view, CategoryViewSet
 
-from .views import chat_view, decision_detail_view, evaluate_view, health_view
-
+router = DefaultRouter()
+router.register(r"categories", CategoryViewSet, basename="category")
 
 urlpatterns = [
+    path("", include(router.urls)),
     path("health/", health_view, name="health"),
-    path("decisions/evaluate/", evaluate_view, name="evaluate"),
-    path("decisions/<int:decision_id>/", decision_detail_view, name="decision-detail"),
-    path("chat/", chat_view, name="chat"),
+    path("evaluate/", evaluate_view, name="evaluate"),
+    path("<int:decision_id>/", decision_detail_view, name="decision-detail"),
 ]
