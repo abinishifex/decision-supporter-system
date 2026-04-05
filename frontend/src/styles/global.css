@@ -1,14 +1,23 @@
 :root {
-  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  --hero-gradient: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent),
-                   radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent);
-  --bg-color: #f8fafc;
-  --card-bg: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
+  --primary-gradient: linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%);
+  --hero-gradient: radial-gradient(circle at top right, rgba(29, 78, 216, 0.15), transparent),
+                   radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.08), transparent);
+  --bg-color: #0f172a;
+  --bg-alt: #0a0f1e;
+  --card-bg: #1e293b;
+  --card-bg-deep: #0f172a;
+  --border-color: #334155;
+  --input-bg: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
   --accent-color: #3b82f6;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --accent-light: #1e3a5f;
+  --btn-secondary-bg: #1e293b;
+  --btn-secondary-hover: #334155;
+  --score-bar-bg: #334155;
+  --footer-bg: #020617;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
   --radius: 1rem;
   --radius-lg: 1.5rem;
 }
@@ -83,7 +92,7 @@ button {
 }
 
 .btn-secondary {
-  background: #f1f5f9;
+  background: var(--btn-secondary-bg);
   color: var(--text-primary);
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
@@ -92,5 +101,6 @@ button {
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: var(--btn-secondary-hover);
 }
+
