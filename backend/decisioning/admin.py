@@ -1,21 +1,54 @@
 from django.contrib import admin
-from .models import DecisionSession, Category, Question, AllowedAnswer
+from .models import Category, Question, AllowedAnswer, DecisionSession
 
-# Register standard models
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "description", "icon", "created_at")
+    search_fields = ("name", "description")
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("text", "category", "order")
+    list_filter = ("category",)
+    search_fields = ("text",)
+
+
+@admin.register(AllowedAnswer)
+class AllowedAnswerAdmin(admin.ModelAdmin):
+    list_display = ("label", "value", "question")
+    list_filter = ("question",)
+    search_fields = ("label",)
+
+# Register standard models (kept from main branch)
 admin.site.register(Category)
 admin.site.register(Question)
 admin.site.register(AllowedAnswer)
 
 @admin.register(DecisionSession)
 class DecisionSessionAdmin(admin.ModelAdmin):
-    # Added 'status' and replaced analysis with the summary for a better overview
-    list_display = ("id", "user", "problem", "category_name", "recommendation", "status", "created_at")
-    
-    # Allows you to search through the new analysis fields in the admin search bar
-    search_fields = ("problem", "recommendation", "analysis_summary", "analysis_pros")
-    
-    # Keep these as read-only so they can't be accidentally changed in the admin
-    readonly_fields = ("created_at", "results", "analysis_summary", "analysis_pros", "analysis_cons")
-    
-    # Allows you to filter history by status or date in the sidebar
-    list_filter = ("status", "created_at", "category_name")
+    # Combined fields from both versions
+    list_display = (
+        "id",
+        "user",
+        "problem",
+        "category",        # from your branch
+        "category_name",   # from main branch
+        "recommendation",
+        "status",
+        "created_at",
+    )
+    list_filter = ("status", "category", "created_at", "category_name")
+    search_fields = (
+        "problem",
+        "recommendation",
+        "analysis_summary",
+        "analysis_pros",
+    )
+    readonly_fields = (
+        "created_at",
+        "results",
+        "analysis_summary",
+        "analysis_pros",
+        "analysis_cons",
+    )
