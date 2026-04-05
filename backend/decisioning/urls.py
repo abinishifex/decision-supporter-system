@@ -1,14 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import decision_detail_view, evaluate_view, health_view, CategoryViewSet
+from .views import DecisionSessionViewSet
 
+# Create a router and register our viewset with it.
 router = DefaultRouter()
-router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'decisions', DecisionSessionViewSet, basename='decision')
 
+# The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path("", include(router.urls)),
-    path("health/", health_view, name="health"),
-    path("decisions/evaluate/", evaluate_view, name="evaluate"),
-    path("decisions/<int:decision_id>/", decision_detail_view, name="decision-detail"),
+    path('', include(router.urls)),
 ]
-
