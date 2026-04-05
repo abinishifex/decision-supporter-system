@@ -31,17 +31,30 @@ class AllowedAnswer(models.Model):
 
 
 class DecisionSession(models.Model):
+    STATUS_CHOICES = [
+        ("initiated", "Initiated"),
+        ("completed", "Completed"),
+    ]
+
+    user = models.ForeignKey(
+        "accounts.User", on_delete=models.CASCADE, related_name="decisions", null=True
+    )
     problem = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     options = models.JSONField()
-    answers = models.JSONField()
-    results = models.JSONField()
-    recommendation = models.CharField(max_length=255)
-    analysis = models.TextField()
+    dynamic_questions = models.JSONField(null=True, blank=True)
+    answers = models.JSONField(null=True, blank=True)
+    results = models.JSONField(null=True, blank=True)
+    recommendation = models.CharField(max_length=255, blank=True, default="")
+    
+    # Split Analysis
+    analysis_summary = models.TextField(blank=True, default="")
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="initiated")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.problem}: {self.recommendation}"
+        return f"{self.problem[:50]}... ({self.status})"
