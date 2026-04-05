@@ -6,3 +6,14 @@ coverage/
 *.log
 .env*
 !.env.example
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+ENV/
+env.bak/
+venv.bak/
