@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import OptionInput from '../components/OptionInput';
 import QuestionCard from '../components/QuestionCard';
 import ResultCard from '../components/ResultCard';
@@ -7,8 +8,9 @@ import { evaluateDecision } from '../lib/api';
 import { Sparkles, Info, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 const Decision = () => {
+  const location = useLocation();
   const [step, setStep] = useState(1); // 1: Input, 2: Category, 3: Questions, 4: Results
-  const [problem, setProblem] = useState('');
+  const [problem, setProblem] = useState(location.state?.initialProblem || '');
   const [options, setOptions] = useState(['', '']);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [answers, setAnswers] = useState({}); // { optionIndex: { questionId: value } }
