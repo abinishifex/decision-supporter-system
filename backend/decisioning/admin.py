@@ -1,10 +1,54 @@
 from django.contrib import admin
+from .models import Category, Question, AllowedAnswer, DecisionSession
 
-from .models import DecisionSession
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "description", "icon", "created_at")
+    search_fields = ("name", "description")
 
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("text", "category", "order")
+    list_filter = ("category",)
+    search_fields = ("text",)
+
+
+@admin.register(AllowedAnswer)
+class AllowedAnswerAdmin(admin.ModelAdmin):
+    list_display = ("label", "value", "question")
+    list_filter = ("question",)
+    search_fields = ("label",)
+
+# Register standard models (kept from main branch)
+admin.site.register(Category)
+admin.site.register(Question)
+admin.site.register(AllowedAnswer)
 
 @admin.register(DecisionSession)
 class DecisionSessionAdmin(admin.ModelAdmin):
-    list_display = ("id", "category_name", "recommendation", "created_at")
-    search_fields = ("problem", "recommendation", "category_name")
-    readonly_fields = ("created_at",)
+    # Combined fields from both versions
+    list_display = (
+        "id",
+        "user",
+        "problem",
+        "category",        # from your branch
+        "category_name",   # from main branch
+        "recommendation",
+        "status",
+        "created_at",
+    )
+    list_filter = ("status", "category", "created_at", "category_name")
+    search_fields = (
+        "problem",
+        "recommendation",
+        "analysis_summary",
+        "analysis_pros",
+    )
+    readonly_fields = (
+        "created_at",
+        "results",
+        "analysis_summary",
+        "analysis_pros",
+        "analysis_cons",
+    )

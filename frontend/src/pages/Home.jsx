@@ -1,5 +1,6 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
+import DashboardUI from '../components/DashboardUI';
 import FeatureCard from '../components/FeatureCard';
 import { Zap, Shield, BarChart3, Users, Globe, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -15,8 +16,13 @@ const Home = () => {
   ];
 
   return (
-    <div>
+    <div className="bg-slate-50 min-h-screen flex flex-col">
       <HeroSection />
+      
+      {/* Dashboard Preview Section (Based on mockups) */}
+      <section className="py-8 bg-slate-50">
+        <DashboardUI />
+      </section>
       
       <section className="section-padding">
         <div className="container">
