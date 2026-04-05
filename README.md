@@ -14,25 +14,60 @@ This project now has:
 
 ## Run Locally
 
-### Frontend
+### Prerequisites
 
-1. Install Node dependencies:
-   `cd frontend && npm install`
-2. Copy `frontend/.env.example` to `frontend/.env.local`
-3. Set `VITE_API_BASE_URL=http://localhost:8000/api`
-4. Start the frontend:
-   `cd frontend && npm run dev`
+1. **Python 3.12+**
+2. **Node.js 18+**
+3. **Google Gemini API Key** (get from [Google AI Studio](https://aistudio.google.com/))
 
-### Backend
+### Backend Setup
 
-1. Install Python 3.12+ if it is not already available
-2. Create and activate a virtual environment inside `backend/`
-3. Install backend dependencies:
-   `pip install -r backend/requirements.txt`
+1. Create and activate a virtual environment:
+   ```bash
+   cd backend
+   python -m venv venv
+   venv\Scripts\activate  # On Windows
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp ../.env.example ../.env
+   # Edit .env with your actual values
+   ```
+
 4. Apply migrations:
-   `python backend/manage.py migrate`
-5. Start Django:
-   `python backend/manage.py runserver 8000`
+   ```bash
+   python manage.py migrate
+   ```
+
+5. Start Django server:
+   ```bash
+   python manage.py runserver 8000
+   ```
+
+### Frontend Setup
+
+1. Install dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local if needed (defaults should work)
+   ```
+
+3. Start development server:
+   ```bash
+   npm run dev
+   ```
 
 ## API Endpoints
 
