@@ -64,6 +64,10 @@ class InitiateDecisionView(APIView):
                 status="initiated"
             )
             
+            if request.user.is_authenticated:
+                session.user = request.user
+                session.save(update_fields=['user'])
+            
             return Response({
                 "session_id": session.id,
                 "category": category_name,
@@ -107,6 +111,11 @@ class EvaluateDynamicView(APIView):
             session.recommendation = evaluation["recommendedOption"]
             session.analysis_summary = evaluation["summary"]
             session.status = "completed"
+            
+            # As a safeguard, ensure user association if they somehow logged in mid-decision
+            if request.user.is_authenticated and not session.user:
+                session.user = request.user
+                
             session.save()
             
             return Response(DecisionSessionSerializer(session).data, status=status.HTTP_200_OK)
@@ -120,11 +129,14 @@ class EvaluateDynamicView(APIView):
 class DecisionHistoryView(generics.ListAPIView):
     """
     GET /api/v1/decisions/history/
-    Retrieve previous decision sessions.
+    Retrieve previous decision sessions for the authenticated user.
     """
     serializer_class = DecisionSessionSerializer
-    permission_classes = [AllowAny] # In production, this should be IsAuthenticated
-    queryset = DecisionSession.objects.all()
+    from rest_framework.permissions import IsAuthenticated
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return DecisionSession.objects.filter(user=self.request.user)
 
 def health_view(request):
     return JsonResponse({"status": "ok"})
