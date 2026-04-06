@@ -30,7 +30,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
-            is_active=False,  # Account inactive until verified
+            is_active=True,  # Account inactive until verified
         )
 
         # Generate token and uid
