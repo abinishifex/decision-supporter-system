@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
+from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.tokens import default_token_generator
