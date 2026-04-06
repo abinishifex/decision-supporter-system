@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -105,9 +106,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Email Configuration
-import os
-
-# Email Configuration
 if os.getenv('EMAIL_HOST') and os.getenv('USE_REAL_EMAIL') == 'True':
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -117,9 +115,18 @@ if os.getenv('EMAIL_HOST') and os.getenv('USE_REAL_EMAIL') == 'True':
     EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
     EMAIL_TIMEOUT = 10  # Prevent hanging connection from killing the worker
 else:
-
     # Default to console to avoid connection timeouts on Render/Production
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@decisionsupporter.com')
+
+# Static Files Storage (WhiteNoise)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
