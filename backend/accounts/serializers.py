@@ -36,9 +36,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-        # Build verification URL (Frontend URL)
-        # Ideally, this should come from settings, but hardcoding for dev simplicity
-        frontend_url = "http://localhost:3000"
+        # Build verification URL
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
         verification_link = f"{frontend_url}/verify-email/{uid}/{token}"
 
         # Send email (fail silently so a bad SMTP doesn't crash registration)
