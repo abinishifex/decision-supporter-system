@@ -75,7 +75,13 @@ class RegisterSerializer(serializers.ModelSerializer):
                     recipient_list=[user.email],
                 )
         except Exception as e:
-            print(f"ERROR [Email System]: Failed to send email via any method: {str(e)}")
+            error_body = ""
+            if hasattr(e, 'read'):
+                try:
+                    error_body = f" - Body: {e.read().decode('utf-8')}"
+                except:
+                    pass
+            print(f"ERROR [Email System]: Failed to send email via any method: {str(e)}{error_body}")
 
 
         return user
