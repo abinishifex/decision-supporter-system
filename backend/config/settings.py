@@ -8,10 +8,8 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-decision-supporter-dev-key")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".onrender.com"]
-
-if os.getenv("DJANGO_ALLOWED_HOSTS"):
-    ALLOWED_HOSTS.extend([host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS").split(",") if host.strip()])
+ALLOWED_HOSTS = ["*"] # Simplest for Render for now
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
