@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from rest_framework import viewsets, mixins, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from .models import DecisionSession, Category
@@ -17,7 +16,6 @@ from .services import (
     evaluate_dynamic_decision,
 )
 
-
 class CategoryViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
@@ -29,21 +27,37 @@ class CategoryViewSet(
     permission_classes = [AllowAny]
 
 
-class InitiateDecisionView(APIView):
-    """
-    POST /api/v1/decisions/initiate/
-    Role 4: Handles the first step of Dynamic Discovery by generating custom questions.
-    """
-    permission_classes = [AllowAny] # Change to IsAuthenticated if needed
+def health_view(request):
+    return JsonResponse({"status": "ok"})
 
-    def post(self, request):
+
+class DecisionSessionViewSet(viewsets.ModelViewSet):
+    """
+    Full CRUD functionality + specialized initiate/evaluate endpoints.
+    Allows unauthenticated users to create decisions, but restricts history to authenticated users.
+    """
+    serializer_class = DecisionSessionSerializer
+    
+    def get_permissions(self):
+        if self.action in ['initiate', 'evaluate']:
+            return [AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        return DecisionSession.objects.filter(user=self.request.user).order_by('-created_at')
+
+    @action(detail=False, methods=['post'])
+    def initiate(self, request):
+        """
+        STEP 1: POST /api/v1/decisions/decisions/initiate/
+        Takes problem/options and saves a pending decision session with generated questions.
+        """
         serializer = InitiateDecisionSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.validated_data
         try:
-            # Fetch category context if provided
             category_name = "General"
             category_obj = None
             if data.get("category_id"):
@@ -78,15 +92,12 @@ class InitiateDecisionView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-class EvaluateDynamicView(APIView):
-    """
-    POST /api/v1/decisions/evaluate/
-    Role 4: Finalizes the dynamic discovery with a weighted Gemini evaluation.
-    """
-    permission_classes = [AllowAny]
-
-    def post(self, request):
+    @action(detail=False, methods=['post'])
+    def evaluate(self, request):
+        """
+        STEP 2: POST /api/v1/decisions/decisions/evaluate/
+        Takes answers to questions, queries Gemini for ranking, and finalizes session.
+        """
         serializer = EvaluateDynamicSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -110,10 +121,11 @@ class EvaluateDynamicView(APIView):
             session.answers = data["answers"]
             session.results = evaluation["results"]
             session.recommendation = evaluation["recommendedOption"]
-            session.analysis_summary = evaluation["summary"]
+            session.analysis_summary = evaluation.get("summary", "")
+            session.analysis_pros = evaluation.get("pros", "")
+            session.analysis_cons = evaluation.get("cons", "")
             session.status = "completed"
             
-            # As a safeguard, ensure user association if they somehow logged in mid-decision
             if request.user.is_authenticated and not session.user:
                 session.user = request.user
                 
@@ -125,74 +137,3 @@ class EvaluateDynamicView(APIView):
             return Response({"error": "Session not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class DecisionHistoryView(generics.ListAPIView):
-    """
-    GET /api/v1/decisions/history/
-    Retrieve previous decision sessions for the authenticated user.
-    """
-    serializer_class = DecisionSessionSerializer
-    from rest_framework.permissions import IsAuthenticated
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        return DecisionSession.objects.filter(user=self.request.user)
-
-def health_view(request):
-    return JsonResponse({"status": "ok"})
-
-
-class DecisionSessionViewSet(viewsets.ModelViewSet):
-    serializer_class = DecisionSessionSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return DecisionSession.objects.filter(user=self.request.user).order_by('-created_at')
-
-    @action(detail=False, methods=['post'])
-    def initiate(self, request):
-        """
-        STEP 1: POST /api/decisions/initiate/
-        Takes problem/category and returns questions.
-        """
-        from .services import validate_decision_payload
-        normalized = validate_decision_payload(request.data)
-        questions = generate_dynamic_questions(
-            normalized["problem"], 
-            normalized["options"] # Replaced category with options since main's service expects it
-        )
-        return Response(questions, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['post'])
-    def evaluate(self, request):
-        """
-        STEP 2: POST /api/decisions/evaluate/
-        Takes problem, category, options, and answers; saves to DB.
-        """
-        try:
-            data = request.data
-            evaluation = evaluate_dynamic_decision(
-                data["problem"],
-                data["options"],
-                data.get("dynamic_questions", {}),
-                data["answers"]
-            )
-
-            decision = DecisionSession.objects.create(
-                user=request.user,
-                problem=data["problem"],
-                category=None, # Update as appropriate
-                options=data["options"],
-                answers=data["answers"],
-                results=evaluation["results"],
-                recommendation=evaluation["recommendedOption"],
-                analysis_summary=evaluation.get("summary", ""),
-                analysis_pros=evaluation.get("pros", ""),
-                analysis_cons=evaluation.get("cons", "")
-            )
-
-            evaluation["decisionId"] = decision.id
-            return Response(evaluation, status=status.HTTP_201_CREATED)
-        except KeyError as e:
-            return Response({"error": f"Missing field: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
