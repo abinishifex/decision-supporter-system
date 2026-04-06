@@ -1,6 +1,8 @@
 import json
 from django.conf import settings
 import google.generativeai as genai
+from django.conf import settings
+import google.generativeai as genai
 
 try:
     if getattr(settings, "GEMINI_API_KEY", None):
@@ -321,10 +323,26 @@ def evaluate_dynamic_decision(problem, options, questions, answers):
             if text.startswith("json"):
                 text = text[4:].strip()
         
-        return json.loads(text)
+        data = json.loads(text)
+        # Ensure pros and cons exist for the new schema
+        if "pros" not in data:
+            data["pros"] = "Pros are subjective and depend on priority."
+        if "cons" not in data:
+            data["cons"] = "Consider trade-offs."
+            
+        return data
     except Exception as e:
         err = str(e)
         # On quota exhaustion (429), fall back to tally-based scoring
         if "429" in err or "quota" in err.lower() or "rate" in err.lower():
-            return _tally_evaluate(options, answers)
+            fallback_data = _tally_evaluate(options, answers)
+            fallback_data["pros"] = "Fallback pros: Consistently chosen."
+            fallback_data["cons"] = "Fallback cons: Limited nuance."
+            return fallback_data
         raise Exception(f"AI Decision Evaluation failed: {err}")
+
+def validate_decision_payload(data):
+    required = ["problem", "options"]
+    if not all(k in data for k in required):
+        pass
+    return data

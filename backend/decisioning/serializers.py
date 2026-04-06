@@ -34,15 +34,14 @@ class InitiateDecisionSerializer(serializers.Serializer):
 
 class EvaluateDynamicSerializer(serializers.Serializer):
     session_id = serializers.IntegerField()
-    # answers: { "option_index": { "question_id": "A/B/C/D/E", "custom_text": "..." } }
+    # answers: { "question_id": "A/B/C/D/E" }
     answers = serializers.DictField()
-
 
 class DecisionSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecisionSession
         fields = [
-            "id", "problem", "options", "dynamic_questions", "answers", 
-            "results", "recommendation", "analysis_summary", "status", "created_at"
+            "id", "problem", "category", "options", "dynamic_questions", "answers", 
+            "results", "recommendation", "analysis_summary", "analysis_pros", "analysis_cons", "status", "created_at"
         ]
-        read_only_fields = ["id", "created_at", "results", "recommendation"]
+        read_only_fields = ["id", "created_at", "results", "recommendation", "analysis_summary", "analysis_pros", "analysis_cons"]
