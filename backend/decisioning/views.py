@@ -1,8 +1,6 @@
-from django.http import JsonResponse
-from rest_framework import viewsets, mixins, status, generics, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 from .models import DecisionSession, Category
 from .serializers import (
@@ -31,11 +29,7 @@ def health_view(request):
     return JsonResponse({"status": "ok"})
 
 
-class DecisionSessionViewSet(viewsets.ModelViewSet):
-    """
-    Full CRUD functionality + specialized initiate/evaluate endpoints.
-    Allows unauthenticated users to create decisions, but restricts history to authenticated users.
-    """
+    queryset = DecisionSession.objects.all() # Used for schema generation
     serializer_class = DecisionSessionSerializer
     
     def get_permissions(self):
@@ -46,6 +40,10 @@ class DecisionSessionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return DecisionSession.objects.filter(user=self.request.user).order_by('-created_at')
 
+    @extend_schema(
+        request=InitiateDecisionSerializer,
+        responses={201: OpenApiTypes.OBJECT}
+    )
     @action(detail=False, methods=['post'])
     def initiate(self, request):
         """
@@ -92,6 +90,10 @@ class DecisionSessionViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(
+        request=EvaluateDynamicSerializer,
+        responses={200: DecisionSessionSerializer}
+    )
     @action(detail=False, methods=['post'])
     def evaluate(self, request):
         """

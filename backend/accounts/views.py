@@ -1,4 +1,5 @@
-from rest_framework import generics, permissions, status
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.tokens import default_token_generator
@@ -34,6 +35,9 @@ class VerifyEmailView(APIView):
     """
     permission_classes = (permissions.AllowAny,)
 
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT, 400: OpenApiTypes.OBJECT}
+    )
     def get(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
