@@ -48,10 +48,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                 message=f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n\n{verification_link}\n\nThank you!",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
-                fail_silently=True,
             )
-        except Exception:
-            pass  # Log this in production
+        except Exception as e:
+            print(f"ERROR [RegisterSerializer]: Failed to send email: {str(e)}")
 
 
         return user
