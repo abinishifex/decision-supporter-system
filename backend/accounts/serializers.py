@@ -41,13 +41,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         frontend_url = "http://localhost:3000"
         verification_link = f"{frontend_url}/verify-email/{uid}/{token}"
 
-        # Send email
-        send_mail(
-            subject="Verify your Decision Supporter Account",
-            message=f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n\n{verification_link}\n\nThank you!",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+        # Send email (fail silently so a bad SMTP doesn't crash registration)
+        try:
+            send_mail(
+                subject="Verify your Decision Supporter Account",
+                message=f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n\n{verification_link}\n\nThank you!",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass  # Log this in production
+
 
         return user
