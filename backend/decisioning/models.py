@@ -29,12 +29,12 @@ class AllowedAnswer(models.Model):
 
 
 class DecisionSession(models.Model):
-    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE, related_name="decision_sessions")
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE, related_name="decision_sessions", null=True)
     problem = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     options = models.JSONField(default=list)
-    answers = models.JSONField(default=dict)
+    answers = models.JSONField(default=dict, null=True, blank=True)
     dynamic_questions = models.JSONField(null=True, blank=True)
     results = models.JSONField(null=True, blank=True)
 
@@ -55,4 +55,4 @@ class DecisionSession(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Decision {self.id} by {self.user}"
+        return f"{self.problem[:50]}... ({self.status}) by {self.user}"
