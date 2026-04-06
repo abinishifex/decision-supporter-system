@@ -32,7 +32,11 @@ class CategoryViewSet(
 def health_view(request):
     return JsonResponse({"status": "ok"})
 
-
+class DecisionSessionViewSet(viewsets.ModelViewSet):
+    """
+    Full CRUD functionality + specialized initiate/evaluate endpoints.
+    Allows unauthenticated users to create decisions, but restricts history to authenticated users.
+    """
     queryset = DecisionSession.objects.all() # Used for schema generation
     serializer_class = DecisionSessionSerializer
     
