@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ currentUser, onLogout }) => {
   return (
     <nav className="nav-modern">
       <div className="container">
@@ -16,12 +16,22 @@ const Navbar = () => {
           <Link to="/" className="nav-link-modern">Home</Link>
           <Link to="/about" className="nav-link-modern">About</Link>
           <Link to="/decision" className="nav-link-modern">Decision</Link>
+          <Link to="/login" className="nav-link-modern">Login</Link>
         </div>
-        <div>
-          <Link to="/decision" className="btn-primary-modern">
-            Get Started
-          </Link>
-        </div>
+        {currentUser ? (
+          <div className="nav-auth">
+            <span className="nav-user">Hi, {currentUser.username}</span>
+            <button type="button" className="btn-secondary nav-logout" onClick={onLogout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div>
+            <Link to="/login" className="btn-primary-modern">
+              Sign In
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -65,19 +65,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="section-padding">
-        <div className="container">
-          <div className="card" style={{ background: 'var(--primary-gradient)', color: 'white', textAlign: 'center', padding: '4rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>Ready to decide?</h2>
-            <p style={{ fontSize: '1.1rem', marginBottom: '2.5rem', opacity: 0.9 }}>
-              Join thousands of users making better choices every day.
-            </p>
-            <Link to="/decision" className="btn-primary" style={{ background: 'white', color: '#3b82f6', padding: '1rem 3rem' }}>
-              Get Started Now
-            </Link>
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 };

@@ -110,7 +110,7 @@ const DashboardUI = () => {
               </div>
               <div style={{width: 1, height: 50, background: '#e2e8f0'}}></div>
               <div className="dash-stat-item">
-                <div className="dash-stat-value">63%</div>
+                <div className="dash-stat-value">75%</div>
                 <div className="dash-stat-label">Efficiency</div>
               </div>
             </div>
