@@ -118,6 +118,8 @@ else:
     # Default to console to avoid connection timeouts on Render/Production
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+print(f"DEBUG: Email backend set to {EMAIL_BACKEND}")
+print(f"DEBUG: Frontend URL set to {os.getenv('FRONTEND_URL', 'http://localhost:3000')}")
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@decisionsupporter.com')
 
