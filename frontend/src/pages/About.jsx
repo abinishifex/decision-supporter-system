@@ -3,7 +3,7 @@ import { Brain, Target, Zap, CheckCircle2 } from 'lucide-react';
 
 const About = () => {
   return (
-    <div className="section-padding">
+    <div className="section-padding page-shell">
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
           <h1 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem' }}>
@@ -24,9 +24,9 @@ const About = () => {
               By breaking down decisions into quantifiable metrics, we help you see past the noise and focus on what truly matters.
             </p>
           </div>
-          <div className="card" style={{ background: 'var(--hero-gradient)', display: 'flex', justifyContent: 'center', padding: '4rem' }}>
-            <Brain size={120} color="#3b82f6" />
-          </div>
+        <div className="card" style={{ background: 'var(--hero-gradient)', display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+          <Brain size={120} color="#3b82f6" />
+        </div>
         </div>
 
         <div style={{ marginBottom: '6rem' }}>
@@ -50,7 +50,7 @@ const About = () => {
           </div>
         </div>
 
-        <div className="card" style={{ background: '#f8fafc', padding: '4rem' }}>
+        <div className="card" style={{ background: 'rgba(8, 17, 31, 0.92)', padding: '4rem' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, textAlign: 'center', marginBottom: '3rem' }}>How It Works</h2>
           <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <div style={{ display: 'flex', gap: '1.5rem' }}>
