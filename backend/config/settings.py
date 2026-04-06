@@ -113,11 +113,12 @@ if os.getenv('EMAIL_HOST') and os.getenv('USE_REAL_EMAIL') == 'True':
     EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
     EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
     EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
     EMAIL_TIMEOUT = 10  # Prevent hanging connection from killing the worker
 else:
     # Default to console to avoid connection timeouts on Render/Production
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
 
 print(f"DEBUG: Email backend set to {EMAIL_BACKEND}")
 print(f"DEBUG: Frontend URL set to {os.getenv('FRONTEND_URL', 'http://localhost:3000')}")

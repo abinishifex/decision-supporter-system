@@ -41,16 +41,41 @@ class RegisterSerializer(serializers.ModelSerializer):
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
         verification_link = f"{frontend_url}/verify-email/{uid}/{token}"
 
-        # Send email (fail silently so a bad SMTP doesn't crash registration)
+        # Send email (fail silently so a bad provider doesn't crash registration)
         try:
-            send_mail(
-                subject="Verify your Decision Supporter Account",
-                message=f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n\n{verification_link}\n\nThank you!",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
+            if getattr(settings, 'RESEND_API_KEY', None):
+                import json
+                from urllib.request import Request, urlopen
+
+                # Resend API Payload
+                url = "https://api.resend.com/emails"
+                headers = {
+                    "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                }
+                data = {
+                    "from": settings.DEFAULT_FROM_EMAIL,
+                    "to": [user.email],
+                    "subject": "Verify your Decision Supporter Account",
+                    "html": f"<p>Hi {user.username},</p><p>Please verify your email by clicking the link below:</p><p><a href='{verification_link}'>{verification_link}</a></p><p>Thank you!</p>"
+                }
+
+                req = Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
+                with urlopen(req) as response:
+                    if response.getcode() == 200 or response.getcode() == 201:
+                        print(f"SUCCESS [Resend API]: Email sent to {user.email}")
+                    else:
+                        print(f"WARNING [Resend API]: Unexpected response code {response.getcode()}")
+            else:
+                # Traditional Fallback (SMTP/Console)
+                send_mail(
+                    subject="Verify your Decision Supporter Account",
+                    message=f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n\n{verification_link}\n\nThank you!",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                )
         except Exception as e:
-            print(f"ERROR [RegisterSerializer]: Failed to send email: {str(e)}")
+            print(f"ERROR [Email System]: Failed to send email via any method: {str(e)}")
 
 
         return user
