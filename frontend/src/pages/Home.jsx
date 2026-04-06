@@ -16,11 +16,10 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen flex flex-col">
+    <div className="page-shell">
       <HeroSection />
       
-      {/* Dashboard Preview Section (Based on mockups) */}
-      <section className="py-8 bg-slate-50">
+      <section className="dashboard-section">
         <DashboardUI />
       </section>
       
@@ -40,7 +39,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="section-padding" style={{ background: '#f1f5f9' }}>
+      <section className="section-padding page-band">
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>How It Works</h2>
@@ -65,7 +64,6 @@ const Home = () => {
         </div>
       </section>
 
-      
     </div>
   );
 };

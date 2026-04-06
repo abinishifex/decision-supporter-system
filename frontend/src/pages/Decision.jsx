@@ -237,7 +237,7 @@
                   ))}
                 </div>
 
-                <div className="card" style={{ background: '#f8fafc', padding: '3rem' }}>
+                <div className="card" style={{ background: 'rgba(8, 17, 31, 0.92)', padding: '3rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
                     <Info size={24} color="var(--accent-color)" />
                     <h4 style={{ fontSize: '1.25rem', fontWeight: 800 }}>AI Decision Analysis</h4>
