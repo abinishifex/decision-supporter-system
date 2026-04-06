@@ -68,8 +68,6 @@ DATABASES = {
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-}
-
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = []
