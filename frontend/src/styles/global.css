@@ -90,7 +90,6 @@ button {
   opacity: 0.9;
   transform: scale(1.02);
 }
-
 .btn-secondary {
   background: var(--btn-secondary-bg);
   color: var(--text-primary);
