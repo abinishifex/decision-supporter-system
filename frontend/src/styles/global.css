@@ -81,6 +81,7 @@ button {
   opacity: 0.9;
   transform: scale(1.02);
 }
+
 .btn-secondary {
   background: #f1f5f9;
   color: var(--text-primary);
@@ -89,6 +90,7 @@ button {
   font-weight: 600;
   transition: background 0.3s ease;
 }
+
 .btn-secondary:hover {
   background: #e2e8f0;
 }
